@@ -64,6 +64,7 @@ class WebConfig {
     @Bean
     fun restRoutes(baseHandler: RestHandler): RouterFunction<ServerResponse> = coRouter {
         GET("/") { baseHandler.homePage() }
+        GET("/test") { baseHandler.testPage() }
     }
 
     companion object {
