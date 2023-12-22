@@ -58,5 +58,6 @@ class WebConfig {
     ): RouterFunction<ServerResponse> = coRouter {
         GET("/") { baseHandler.homePage() }
         GET("/list") { baseHandler.listClients() }
+        GET("/who-am-i") { baseHandler.getUserInfo() }
     }
 }

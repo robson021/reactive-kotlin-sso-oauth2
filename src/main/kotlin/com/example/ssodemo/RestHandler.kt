@@ -1,5 +1,6 @@
 package com.example.ssodemo
 
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -8,8 +9,15 @@ import org.springframework.web.reactive.function.server.ServerResponse
 class RestHandler(
     private val repo: InMemoryReactiveClientRegistrationRepository
 ) {
-
     suspend fun homePage(): ServerResponse = Response.toPlainText("Hello world!")
+
+    suspend fun getUserInfo(): ServerResponse {
+        val auth = SecurityContextHolder.getContext().getAuthentication()
+        return when {
+            auth != null -> Response.toJson(auth)
+            else -> Response.toPlainText("Could not found...")
+        }
+    }
 
     suspend fun listClients(): ServerResponse {
         data class ClientInfo(
@@ -19,9 +27,7 @@ class RestHandler(
             val scopes: Collection<String>,
         )
 
-        val clients = repo.map {
-            ClientInfo(it.clientId, it.registrationId, it.clientName, it.scopes)
-        }
-        return Response.toJson(clients)
+//        val clients = repo.map { ClientInfo(it.clientId, it.registrationId, it.clientName, it.scopes) }
+        return Response.toJson(repo.map { it })
     }
 }
