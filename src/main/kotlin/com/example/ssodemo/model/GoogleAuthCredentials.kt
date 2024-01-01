@@ -1,4 +1,4 @@
-package com.example.ssodemo
+package com.example.ssodemo.model
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component

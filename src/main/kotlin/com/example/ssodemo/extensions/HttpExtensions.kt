@@ -1,4 +1,4 @@
-package com.example.ssodemo
+package com.example.ssodemo.extensions
 
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.server.ServerResponse
