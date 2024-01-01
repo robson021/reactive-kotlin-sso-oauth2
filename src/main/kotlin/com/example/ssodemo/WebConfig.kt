@@ -12,9 +12,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames
 import org.springframework.security.web.server.SecurityWebFilterChain
-import org.springframework.web.reactive.function.server.RouterFunction
-import org.springframework.web.reactive.function.server.ServerResponse
-import org.springframework.web.reactive.function.server.coRouter
 
 
 @Configuration
@@ -52,12 +49,4 @@ class WebConfig {
         return InMemoryReactiveClientRegistrationRepository(googleClient)
     }
 
-    @Bean
-    fun restRoutes(
-        baseHandler: RestHandler,
-    ): RouterFunction<ServerResponse> = coRouter {
-        GET("/") { baseHandler.homePage() }
-        GET("/list") { baseHandler.listClients() }
-        GET("/who-am-i") { baseHandler.getUserInfo() }
-    }
 }
