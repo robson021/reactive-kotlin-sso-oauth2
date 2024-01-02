@@ -1,4 +1,9 @@
-## SSO login with reactive spring & kotlin coroutines
+## SSO login with reactive Spring & Kotlin coroutines
+
+- Reactive Spring Boot.
+- H2 + R2DBC.
+- Kotlin coroutines with WebFlux.
+- Google auth login with Spring Security.
 
 ### how to setup google auth:
 
