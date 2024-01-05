@@ -12,3 +12,6 @@ spring:
           facebook:
             client-id: <todo>
             client-secret: <todo>
+          github:
+            client-id: <todo>
+            client-secret: <todo>

@@ -48,10 +48,12 @@ fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
 @Bean
 fun clientRegistrationRepository(
     googleAuth: OAuthCredentials,
+    githubAuth: OAuthCredentials,
     facebookAuth: OAuthCredentials,
 ) = InMemoryReactiveClientRegistrationRepository(
     googleAuth.getClientRegistration(),
-    facebookAuth.getClientRegistration(), // TODO
+    githubAuth.getClientRegistration(),
+    facebookAuth.getClientRegistration(),
 )
 
 @Bean

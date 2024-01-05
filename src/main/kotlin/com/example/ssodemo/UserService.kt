@@ -28,13 +28,15 @@ class UserService(
     }
 
     suspend fun lastUpdate(user: UserDetails): Long {
-        val byId = userRepository.findById(user.id).awaitFirstOrNull()
-        if (byId == null) {
-            return saveUser(user).lastUpdate
-        } else {
-            val lastLogin = byId.lastUpdate
-            updateUser(byId.copy(lastUpdate = System.currentTimeMillis()))
-            return lastLogin
+        when (val byId = userRepository.findById(user.id).awaitFirstOrNull()) {
+            null -> {
+                return saveUser(user).lastUpdate
+            }
+            else -> {
+                val lastLogin = byId.lastUpdate
+                updateUser(byId.copy(lastUpdate = System.currentTimeMillis()))
+                return lastLogin
+            }
         }
     }
 
