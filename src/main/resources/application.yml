@@ -9,3 +9,6 @@ spring:
           google:
             client-id: <todo>
             client-secret: <todo>
+          facebook:
+            client-id: <todo>
+            client-secret: <todo>
