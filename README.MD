@@ -4,7 +4,8 @@
 - H2 + R2DBC.
 - Kotlin coroutines with WebFlux.
 - Google auth/login with Spring Security.
-- Facebook auth/login (not verified, hard registration process).
+- GitHub auth/login.
+- Facebook auth/login (not verified, hard app registration process, business account required).
 
 ### How to setup Google auth:
 https://developers.google.com/identity/openid-connect/openid-connect
