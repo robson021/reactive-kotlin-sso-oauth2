@@ -6,5 +6,5 @@ data class UserDetails(
     @Id val id: String,
     val name: String,
     val email: String,
-    val lastUpdate: Long = System.currentTimeMillis()
+    val lastUpdate: Long = -1L
 )

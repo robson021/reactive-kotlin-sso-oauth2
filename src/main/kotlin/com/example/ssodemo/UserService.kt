@@ -2,8 +2,8 @@ package com.example.ssodemo
 
 import com.example.ssodemo.db.UserDetails
 import com.example.ssodemo.db.UserRepository
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.r2dbc.core.DatabaseClient
@@ -27,11 +27,13 @@ class UserService(
         return users
     }
 
+    suspend fun getCachedUser(user: UserDetails): UserDetails = userRepository
+        .findById(user.id)
+        .awaitSingleOrNull() ?: user
+
     suspend fun lastUpdate(user: UserDetails): Long {
-        when (val byId = userRepository.findById(user.id).awaitFirstOrNull()) {
-            null -> {
-                return saveUser(user).lastUpdate
-            }
+        when (val byId = userRepository.findById(user.id).awaitSingleOrNull()) {
+            null -> return saveUser(user).lastUpdate
             else -> {
                 val lastLogin = byId.lastUpdate
                 updateUser(byId.copy(lastUpdate = System.currentTimeMillis()))
@@ -49,7 +51,7 @@ class UserService(
             .bind("last_update", user.lastUpdate)
             .fetch()
             .awaitRowsUpdated()
-        log.debug("Save user rows updated: {}", rowsUpdated)
+        log.debug("'saveUser' rows updated: {}", rowsUpdated)
         return user
     }
 
@@ -59,7 +61,7 @@ class UserService(
             .bindProperties(user)
             .fetch()
             .awaitRowsUpdated()
-        log.debug("Update user rows updated: {}.", rowsUpdated)
+        log.debug("'updateUser' rows updated: {}.", rowsUpdated)
     }
 
     companion object {

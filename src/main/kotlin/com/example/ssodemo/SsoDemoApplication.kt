@@ -79,6 +79,9 @@ class RestController(private val service: UserService) {
     @GetMapping("/users")
     suspend fun listUsers(): List<UserDetails> = service.allUsers()
 
+    @GetMapping("/cache")
+    suspend fun cachedUser(token: OAuth2AuthenticationToken): UserDetails = service.getCachedUser(token.userDetails())
+
     @GetMapping("/last-update")
     suspend fun lastUpdate(token: OAuth2AuthenticationToken): LocalDateTime {
         val timestamp = service.lastUpdate(token.userDetails())
