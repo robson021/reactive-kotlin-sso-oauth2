@@ -9,20 +9,9 @@ fun OAuth2AuthenticationToken.userDetails(): UserDetails {
     val email = attr["email"]
     val isGoogle = email != null && ((email as String).contains("@gmail."))
 
-    val id: String = when {
-        isGoogle -> "sub"
-        else -> "login"
+    return when {
+        isGoogle -> UserDetails.fromGoogle(attr)
+        else -> UserDetails.fromGitHub(attr)
     }
 
-    val mail: String = if (email == null) {
-        "unknown_email"
-    } else {
-        email as String
-    }
-
-    return UserDetails(
-        attr[id] as String,
-        attr["name"] as String,
-        mail,
-    )
 }
