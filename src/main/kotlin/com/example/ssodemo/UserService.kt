@@ -1,8 +1,7 @@
 package com.example.ssodemo
 
-import com.example.ssodemo.db.UserDetails
+import com.example.ssodemo.db.User
 import com.example.ssodemo.db.UserRepository
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -21,43 +20,39 @@ class UserService(
 ) {
     suspend fun listClients(): List<ClientRegistration> = clientRegistrationRepository.map { it }
 
-    suspend fun allUsers(): List<UserDetails> {
-        val users = userRepository.findAll().collectList().awaitSingle()
+    suspend fun allUsers(): List<User> {
+        val users = userRepository.findAll()
+            .collectList()
+            .awaitSingleOrNull()
+            ?: emptyList()
         log.debug("Users found {}.", users)
         return users
     }
 
-    suspend fun getCachedUser(user: UserDetails): UserDetails = userRepository
-        .findById(user.id)
-        .awaitSingleOrNull() ?: user
+    suspend fun getCachedUser(id: String) = userRepository
+        .findById(id)
+        .awaitSingleOrNull()
 
-    suspend fun lastUpdate(user: UserDetails): Long {
-        when (val byId = userRepository.findById(user.id).awaitSingleOrNull()) {
-            null -> return saveUser(user).lastUpdate
-            else -> {
-                val lastLogin = byId.lastUpdate
-                updateUser(byId.copy(lastUpdate = System.currentTimeMillis()))
-                return lastLogin
-            }
-        }
+    suspend fun getUserCustomField(id: String): Long {
+        throw UnsupportedOperationException()
     }
 
-    private suspend fun saveUser(user: UserDetails): UserDetails {
+    private suspend fun saveUser(user: User): User {
         log.debug("Save user: {}", user)
-        val rowsUpdated = dbClient.sql("insert into USER_DETAILS (id, name, email, last_update) values (:id, :name, :email, :last_update)")
+        val rowsUpdated = dbClient.sql("insert into USERS (id, name, email, custom_field) values (:id, :name, :email, :custom_field)")
             .bind("id", user.id)
             .bind("name", user.name)
             .bind("email", user.email)
-            .bind("last_update", user.lastUpdate)
+            .bind("custom_field", user.customField)
             .fetch()
             .awaitRowsUpdated()
         log.debug("'saveUser' rows updated: {}", rowsUpdated)
         return user
     }
 
-    private suspend fun updateUser(user: UserDetails) {
+    private suspend fun updateUser(user: User) {
         log.debug("Update user: {}", user)
-        val rowsUpdated = dbClient.sql("UPDATE USER_DETAILS SET id = :id, name = :name, email = :email, last_update = :lastUpdate")
+        val rowsUpdated = dbClient.sql("UPDATE USERS SET id = :id, name = :name, email = :email, custom_field = :customField")
             .bindProperties(user)
             .fetch()
             .awaitRowsUpdated()

@@ -1,6 +1,5 @@
 package com.example.ssodemo
 
-import com.example.ssodemo.db.UserDetails
 import com.example.ssodemo.extensions.userDetails
 import com.example.ssodemo.model.OAuthCredentials
 import io.r2dbc.spi.ConnectionFactory
@@ -15,15 +14,10 @@ import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
-import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
-import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
-import java.time.LocalDateTime
-import java.util.*
 
 
 @SpringBootApplication
@@ -68,27 +62,21 @@ fun initializer(connectionFactory: ConnectionFactory?): ConnectionFactoryInitial
 class RestController(private val service: UserService) {
 
     @GetMapping("/")
-    suspend fun userDetails(token: OAuth2AuthenticationToken): UserDetails = token.userDetails()
+    suspend fun userDetails(token: OAuth2AuthenticationToken) = token.userDetails()
 
     @GetMapping("/principal")
-    suspend fun principal(token: OAuth2AuthenticationToken): OAuth2User = token.principal
+    suspend fun principal(token: OAuth2AuthenticationToken) = token.principal!!
 
     @GetMapping("/clients")
-    suspend fun listClients(): List<ClientRegistration> = service.listClients()
+    suspend fun listClients() = service.listClients()
 
     @GetMapping("/users")
-    suspend fun listUsers(): List<UserDetails> = service.allUsers()
+    suspend fun listUsers() = service.allUsers()
 
     @GetMapping("/cache")
-    suspend fun cachedUser(token: OAuth2AuthenticationToken): UserDetails = service.getCachedUser(token.userDetails())
+    suspend fun cachedUser(token: OAuth2AuthenticationToken) = service.getCachedUser(token.userDetails().id) ?: token.userDetails()
 
-    @GetMapping("/last-update")
-    suspend fun lastUpdate(token: OAuth2AuthenticationToken): LocalDateTime {
-        val timestamp = service.lastUpdate(token.userDetails())
-        return LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(timestamp),
-            TimeZone.getDefault().toZoneId(),
-        )
-    }
+    @GetMapping("/custom-field")
+    suspend fun getUserCustomField(token: OAuth2AuthenticationToken) = service.getUserCustomField(token.userDetails().id)
 
 }
