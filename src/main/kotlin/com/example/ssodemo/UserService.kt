@@ -31,28 +31,27 @@ class UserService(
         return users
     }
 
-    suspend fun getCachedUser(id: String) = userRepository
+    suspend fun getUser(id: String) = userRepository
         .findById(id)
         .awaitSingleOrNull()
 
     suspend fun saveOrUpdateUser(userDetails: UserDetails): User {
         // todo: upsert sql command
         log.info("Save or update user: {}.", userDetails)
-        val user = getCachedUser(userDetails.id)
+        val user = getUser(userDetails.id)
 
         val customField = "Custom field: ${LocalDateTime.now()}."
         return when (user) {
-            null -> saveUser(User(userDetails.id, userDetails.name, userDetails.email, customField))
+            null -> saveUser(User(userDetails.id, userDetails.name, customField))
             else -> updateUser(user.copy(customField = customField))
         }
     }
 
     private suspend fun saveUser(user: User): User {
         log.info("Save user: {}.", user)
-        val rowsUpdated = dbClient.sql("insert into USERS (id, name, email, custom_field) values (:id, :name, :email, :custom_field)")
+        val rowsUpdated = dbClient.sql("insert into USERS (id, name, custom_field) values (:id, :name, :custom_field)")
             .bind("id", user.id)
             .bind("name", user.name)
-            .bind("email", user.email)
             .bind("custom_field", user.customField)
             .fetch()
             .awaitRowsUpdated()
@@ -62,7 +61,7 @@ class UserService(
 
     private suspend fun updateUser(user: User): User {
         log.info("Update user: {}.", user)
-        val rowsUpdated = dbClient.sql("UPDATE USERS SET id = :id, name = :name, email = :email, custom_field = :customField")
+        val rowsUpdated = dbClient.sql("UPDATE USERS SET id = :id, name = :name, custom_field = :customField")
             .bindProperties(user)
             .fetch()
             .awaitRowsUpdated()

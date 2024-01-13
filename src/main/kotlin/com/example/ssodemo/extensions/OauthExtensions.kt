@@ -1,7 +1,9 @@
 package com.example.ssodemo.extensions
 
 import com.example.ssodemo.model.UserDetails
+import com.example.ssodemo.model.UserFactory
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
 
 fun OAuth2AuthenticationToken.userDetails(): UserDetails {
@@ -13,8 +15,8 @@ fun OAuth2AuthenticationToken.userDetails(): UserDetails {
     val isGoogle = email != null && ((email as String).contains("@gmail."))
 
     return when {
-        isGoogle -> UserDetails.fromGoogle(attr, scope)
-        else -> UserDetails.fromGitHub(attr, scope)
+        isGoogle -> UserFactory.fromGoogle(attr, scope, email as String, (principal as DefaultOidcUser).idToken.tokenValue)
+        else -> UserFactory.fromGitHub(attr, scope)
     }
 
 }
