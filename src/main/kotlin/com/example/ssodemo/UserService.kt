@@ -11,10 +11,11 @@ import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-//@Transactional
+@Transactional
 class UserService(
     private val clientRegistrationRepository: InMemoryReactiveClientRegistrationRepository,
     private val userRepository: UserRepository,
@@ -61,7 +62,7 @@ class UserService(
 
     private suspend fun updateUser(user: User): User {
         log.info("Update user: {}.", user)
-        val rowsUpdated = dbClient.sql("UPDATE USERS SET id = :id, name = :name, custom_field = :customField")
+        val rowsUpdated = dbClient.sql("UPDATE USERS SET name = :name, custom_field = :customField WHERE id = :id")
             .bindProperties(user)
             .fetch()
             .awaitRowsUpdated()
