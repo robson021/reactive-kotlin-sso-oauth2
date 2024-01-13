@@ -76,7 +76,7 @@ class RestController(private val service: UserService) {
     @GetMapping("/cache")
     suspend fun cachedUser(token: OAuth2AuthenticationToken) = service.getCachedUser(token.userDetails().id) ?: token.userDetails()
 
-    @GetMapping("/custom-field")
-    suspend fun getUserCustomField(token: OAuth2AuthenticationToken) = service.getUserCustomField(token.userDetails().id)
+    @GetMapping("/save-user")
+    suspend fun getUserCustomField(token: OAuth2AuthenticationToken) = service.saveOrUpdateUser(token.userDetails())
 
 }

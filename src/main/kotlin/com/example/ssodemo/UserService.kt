@@ -2,6 +2,7 @@ package com.example.ssodemo
 
 import com.example.ssodemo.db.User
 import com.example.ssodemo.db.UserRepository
+import com.example.ssodemo.model.UserDetails
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -10,6 +11,7 @@ import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 //@Transactional
@@ -33,12 +35,20 @@ class UserService(
         .findById(id)
         .awaitSingleOrNull()
 
-    suspend fun getUserCustomField(id: String): Long {
-        throw UnsupportedOperationException()
+    suspend fun saveOrUpdateUser(userDetails: UserDetails): User {
+        // todo: upsert sql command
+        log.info("Save or update user: {}.", userDetails)
+        val user = getCachedUser(userDetails.id)
+
+        val customField = "Custom field: ${LocalDateTime.now()}."
+        return when (user) {
+            null -> saveUser(User(userDetails.id, userDetails.name, userDetails.email, customField))
+            else -> updateUser(user.copy(customField = customField))
+        }
     }
 
     private suspend fun saveUser(user: User): User {
-        log.debug("Save user: {}", user)
+        log.info("Save user: {}.", user)
         val rowsUpdated = dbClient.sql("insert into USERS (id, name, email, custom_field) values (:id, :name, :email, :custom_field)")
             .bind("id", user.id)
             .bind("name", user.name)
@@ -46,17 +56,18 @@ class UserService(
             .bind("custom_field", user.customField)
             .fetch()
             .awaitRowsUpdated()
-        log.debug("'saveUser' rows updated: {}", rowsUpdated)
+        log.debug("'saveUser' rows updated: {}.", rowsUpdated)
         return user
     }
 
-    private suspend fun updateUser(user: User) {
-        log.debug("Update user: {}", user)
+    private suspend fun updateUser(user: User): User {
+        log.info("Update user: {}.", user)
         val rowsUpdated = dbClient.sql("UPDATE USERS SET id = :id, name = :name, email = :email, custom_field = :customField")
             .bindProperties(user)
             .fetch()
             .awaitRowsUpdated()
         log.debug("'updateUser' rows updated: {}.", rowsUpdated)
+        return user
     }
 
     companion object {
