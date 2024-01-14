@@ -6,8 +6,9 @@ import com.example.ssodemo.model.UserDetails
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.awaitRowsUpdated
+import org.springframework.r2dbc.core.awaitSingleOrNull
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.stereotype.Service
@@ -42,31 +43,31 @@ class UserService(
         val user = getUser(userDetails.id)
 
         val customField = "Custom field: ${LocalDateTime.now()}."
+        val country = LocaleContextHolder.getLocale().country
         return when (user) {
-            null -> saveUser(User(userDetails.id, userDetails.name, customField))
-            else -> updateUser(user.copy(customField = customField))
+            null -> saveUser(User(userDetails.id, userDetails.name, country, customField))
+            else -> updateUser(user.copy(country = country, customField = customField))
         }
     }
 
     private suspend fun saveUser(user: User): User {
-        log.info("Save user: {}.", user)
-        val rowsUpdated = dbClient.sql("insert into USERS (id, name, custom_field) values (:id, :name, :custom_field)")
+        dbClient.sql("insert into USERS (id, name, country, custom_field) values (:id, :name, :country, :custom_field)")
             .bind("id", user.id)
             .bind("name", user.name)
+            .bind("country", user.country)
             .bind("custom_field", user.customField)
             .fetch()
-            .awaitRowsUpdated()
-        log.debug("'saveUser' rows updated: {}.", rowsUpdated)
+            .awaitSingleOrNull()
+        log.info("Save user: {}.", user)
         return user
     }
 
     private suspend fun updateUser(user: User): User {
-        log.info("Update user: {}.", user)
-        val rowsUpdated = dbClient.sql("UPDATE USERS SET name = :name, custom_field = :customField WHERE id = :id")
+        dbClient.sql("UPDATE USERS SET name = :name, country = :country, custom_field = :customField WHERE id = :id")
             .bindProperties(user)
             .fetch()
-            .awaitRowsUpdated()
-        log.debug("'updateUser' rows updated: {}.", rowsUpdated)
+            .awaitSingleOrNull()
+        log.info("Update: {}.", user)
         return user
     }
 
