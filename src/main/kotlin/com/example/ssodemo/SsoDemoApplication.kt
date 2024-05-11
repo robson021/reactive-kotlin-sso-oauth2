@@ -51,11 +51,9 @@ fun clientRegistrationRepository(
 )
 
 @Bean
-fun initializer(connectionFactory: ConnectionFactory?): ConnectionFactoryInitializer {
-    val initializer = ConnectionFactoryInitializer()
-    initializer.setConnectionFactory(connectionFactory!!)
-    initializer.setDatabasePopulator(ResourceDatabasePopulator(ClassPathResource("schema.sql")))
-    return initializer
+fun initializer(connectionFactory: ConnectionFactory?) = ConnectionFactoryInitializer().apply {
+    setConnectionFactory(connectionFactory!!)
+    setDatabasePopulator(ResourceDatabasePopulator(ClassPathResource("schema.sql")))
 }
 
 @RestController
