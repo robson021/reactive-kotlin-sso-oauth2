@@ -32,7 +32,6 @@ import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import org.springframework.web.util.pattern.PathPatternParser
 import reactor.core.publisher.Mono
-import java.security.Principal
 
 
 @SpringBootApplication
@@ -82,8 +81,7 @@ class ApiPathFilter(
             return chain.filter(exchange)
         }
         log.logDebug { "Filtering path: $path" }
-        return exchange.getPrincipal<Principal>()
-            .map { it as OAuth2AuthenticationToken }
+        return exchange.getPrincipal<OAuth2AuthenticationToken>()
             .map { it.userDetails().id }
             .doOnNext {
                 if (!allowedUsers.contains(it)) {
@@ -119,7 +117,7 @@ class RestController(private val service: UserService) {
 class ApiController(private val service: UserService) {
 
     @GetMapping("/clients")
-    suspend fun listClients() = service.listClients()
+    suspend fun listClients() = service.listOauthClients()
 
     @GetMapping("/users")
     suspend fun listUsers() = service.allUsers()

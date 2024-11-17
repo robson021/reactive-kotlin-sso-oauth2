@@ -21,7 +21,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val dbClient: DatabaseClient,
 ) {
-    suspend fun listClients(): List<ClientRegistration> = clientRegistrationRepository.map { it }
+    suspend fun listOauthClients(): List<ClientRegistration> = clientRegistrationRepository.map { it }
 
     suspend fun allUsers(): List<User> {
         val users = userRepository.findAll()
@@ -57,7 +57,7 @@ class UserService(
             .bind("custom_field", user.customField)
             .fetch()
             .awaitSingleOrNull()
-        log.info("Save user: {}.", user)
+        log.info("Save: {}.", user)
         return user
     }
 
