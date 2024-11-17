@@ -1,6 +1,7 @@
 logging.level:
   com.example: debug
   io.r2dbc.h2: error
+#server.error.whitelabel.enabled: false
 spring:
   #  profiles.active: restrict-users
   security.oauth2.client.registration:
