@@ -2,10 +2,9 @@ package com.example.ssodemo
 
 import com.example.ssodemo.db.User
 import com.example.ssodemo.db.UserRepository
+import com.example.ssodemo.extensions.getLogger
 import com.example.ssodemo.model.UserDetails
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitSingleOrNull
@@ -72,6 +71,6 @@ class UserService(
     }
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(UserService::class.java)
+        private val log by getLogger()
     }
 }

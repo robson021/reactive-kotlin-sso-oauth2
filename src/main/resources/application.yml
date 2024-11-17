@@ -1,17 +1,15 @@
-logging:
-  level:
-    com.example: debug
+logging.level:
+  com.example: debug
+  io.r2dbc.h2: error
 spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: <todo>
-            client-secret: <todo>
-          facebook:
-            client-id: <todo>
-            client-secret: <todo>
-          github:
-            client-id: <todo>
-            client-secret: <todo>
+  #  profiles.active: restrict-users
+  security.oauth2.client.registration:
+    google:
+      client-id: <todo>
+      client-secret: <todo>
+    facebook:
+      client-id: <todo>
+      client-secret: <todo>
+    github:
+      client-id: <todo>
+      client-secret: <todo>
