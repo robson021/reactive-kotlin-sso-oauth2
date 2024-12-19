@@ -7,7 +7,7 @@ import com.example.ssodemo.model.UserDetails
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.awaitSingleOrNull
+import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository
 import org.springframework.stereotype.Service
@@ -56,7 +56,7 @@ class UserService(
             .bind("country", user.country)
             .bind("custom_field", user.customField)
             .fetch()
-            .awaitSingleOrNull()
+            .awaitRowsUpdated()
         log.info("Save: {}", user)
         return user
     }
@@ -65,7 +65,7 @@ class UserService(
         dbClient.sql("UPDATE USERS SET name = :name, country = :country, custom_field = :customField WHERE id = :id")
             .bindProperties(user)
             .fetch()
-            .awaitSingleOrNull()
+            .awaitRowsUpdated()
         log.info("Update: {}", user)
         return user
     }
