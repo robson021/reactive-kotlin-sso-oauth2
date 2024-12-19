@@ -28,7 +28,7 @@ class UserService(
             .collectList()
             .awaitSingleOrNull()
             ?: emptyList()
-        log.debug("Users found {}.", users)
+        log.debug("Users found {}", users)
         return users
     }
 
@@ -38,7 +38,7 @@ class UserService(
 
     suspend fun saveOrUpdateUser(userDetails: UserDetails): User {
         // todo: upsert sql command
-        log.info("Save or update user: {}.", userDetails)
+        log.info("Save or update user: {}", userDetails)
         val user = getUser(userDetails.id)
 
         val customField = "Custom field: ${LocalDateTime.now()}."
@@ -57,7 +57,7 @@ class UserService(
             .bind("custom_field", user.customField)
             .fetch()
             .awaitSingleOrNull()
-        log.info("Save: {}.", user)
+        log.info("Save: {}", user)
         return user
     }
 
@@ -66,7 +66,7 @@ class UserService(
             .bindProperties(user)
             .fetch()
             .awaitSingleOrNull()
-        log.info("Update: {}.", user)
+        log.info("Update: {}", user)
         return user
     }
 

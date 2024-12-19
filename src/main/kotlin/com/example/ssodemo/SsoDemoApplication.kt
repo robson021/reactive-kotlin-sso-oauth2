@@ -103,7 +103,7 @@ class ApiPathFilter(
 }
 
 @RestController
-class RestController(private val service: UserService) {
+class RestController {
 
     @GetMapping("/")
     suspend fun userDetails(token: OAuth2AuthenticationToken) = token.userDetails()
