@@ -45,7 +45,7 @@ class UserService(
         val country = LocaleContextHolder.getLocale().country
         return when (user) {
             null -> saveUser(User(userDetails.id, userDetails.name, country, customField))
-            else -> updateUser(user.copy(country = country, customField = customField))
+            else -> updateUser(user.copy(name = userDetails.name , country = country, customField = customField))
         }
     }
 

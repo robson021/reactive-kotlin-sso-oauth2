@@ -8,10 +8,10 @@
 - Facebook auth/login (not verified, hard app registration process, business account required).
 
 ### How to setup Google auth:
-https://developers.google.com/identity/openid-connect/openid-connect
+- doc: https://developers.google.com/identity/openid-connect/openid-connect
+- api keys: https://console.cloud.google.com/apis/credentials
 
 ### GitHub setup:
-
 https://github.com/settings/developers [add OAuth Apps]
 <br> setup homepage & callback URL:
 

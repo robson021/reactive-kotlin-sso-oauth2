@@ -116,6 +116,10 @@ class RestController {
 @RequestMapping("/api")
 class ApiController(private val service: UserService) {
 
+    /*
+    * Get mapping for every path = easier tests with a browser
+    */
+
     @GetMapping("/clients")
     suspend fun listClients() = service.listOauthClients()
 
